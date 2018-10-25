@@ -720,7 +720,7 @@ class FormBuilder
     protected function getSelectedValue($value, $selected)
     {
         if (is_array($selected)) {
-            return in_array($value, $selected, true) ? 'selected' : null;
+            return in_array($value, $selected) ? 'selected' : null;
         }
 
         return ((string) $value == (string) $selected) ? 'selected' : null;
@@ -1165,7 +1165,13 @@ class FormBuilder
      */
     public function oldInputIsEmpty()
     {
-        return (isset($this->session) && count($this->session->getOldInput()) == 0);
+        $old_input = $this->session->getOldInput();
+        foreach ($old_input as $key => $value) {
+            if (strpos($key, '_filter') !== FALSE) {
+                unset($old_input[$key]);
+            }
+        }
+        return (isset($this->session) && count($old_input) == 0);
     }
 
     /**
